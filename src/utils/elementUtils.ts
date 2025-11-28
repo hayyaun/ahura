@@ -6,10 +6,7 @@ export function generateId(): string {
 
 export function createDefaultElement(tag: ElementTag = 'div'): UIElement {
   const defaultStyles: ElementStyles = {
-    display: 'block',
-    position: 'relative',
     padding: '16px',
-    backgroundColor: '#ffffff',
   };
 
   return {
@@ -140,13 +137,13 @@ function convertColorToTailwind(value: string, type: 'bg' | 'text' | 'border'): 
 export function stylesToTailwind(styles: ElementStyles): string {
   const classes: string[] = [];
   
-  // Display
+  // Display - only export if explicitly set (not default block)
   if (styles.display === 'flex') classes.push('flex');
   else if (styles.display === 'grid') classes.push('grid');
   else if (styles.display === 'inline-block') classes.push('inline-block');
   else if (styles.display === 'inline') classes.push('inline');
   else if (styles.display === 'none') classes.push('hidden');
-  else if (styles.display === 'block') classes.push('block');
+  // Don't export 'block' - it's the default for div elements
   
   // Position
   if (styles.position === 'relative') classes.push('relative');

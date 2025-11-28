@@ -8,6 +8,7 @@ interface ElementTreeProps {
   onSelect: (id: string) => void;
   onAddChild: (parentId: string, tag: ElementTag) => void;
   onDelete: (id: string) => void;
+  onHover: (id: string | null) => void;
 }
 
 interface TreeNodeProps {
@@ -16,10 +17,11 @@ interface TreeNodeProps {
   onSelect: (id: string) => void;
   onAddChild: (parentId: string, tag: ElementTag) => void;
   onDelete: (id: string) => void;
+  onHover: (id: string | null) => void;
   level: number;
 }
 
-function TreeNode({ element, selectedElementId, onSelect, onAddChild, onDelete, level }: TreeNodeProps) {
+function TreeNode({ element, selectedElementId, onSelect, onAddChild, onDelete, onHover, level }: TreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const isSelected = element.id === selectedElementId;
   const hasChildren = element.children.length > 0;
@@ -27,11 +29,13 @@ function TreeNode({ element, selectedElementId, onSelect, onAddChild, onDelete, 
   return (
     <div className="select-none">
       <div
-        className={`flex items-center gap-1 px-2 py-1 hover:bg-gray-700 cursor-pointer group ${
+        className={`flex items-center gap-1 px-2 py-1 hover:bg-[#2d2d2d] cursor-pointer group ${
           isSelected ? 'bg-blue-600 hover:bg-blue-700' : ''
         }`}
         style={{ paddingLeft: `${level * 12 + 8}px` }}
         onClick={() => onSelect(element.id)}
+        onMouseEnter={() => onHover(element.id)}
+        onMouseLeave={() => onHover(null)}
       >
         <button
           className="w-3 h-3 flex items-center justify-center"
@@ -57,7 +61,7 @@ function TreeNode({ element, selectedElementId, onSelect, onAddChild, onDelete, 
         </span>
 
         <button
-          className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-blue-500 rounded"
+          className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#3a3a3a] rounded"
           onClick={(e) => {
             e.stopPropagation();
             onAddChild(element.id, 'div');
@@ -91,6 +95,7 @@ function TreeNode({ element, selectedElementId, onSelect, onAddChild, onDelete, 
               onSelect={onSelect}
               onAddChild={onAddChild}
               onDelete={onDelete}
+              onHover={onHover}
               level={level + 1}
             />
           ))}
@@ -100,10 +105,10 @@ function TreeNode({ element, selectedElementId, onSelect, onAddChild, onDelete, 
   );
 }
 
-export default function ElementTree({ elements, selectedElementId, onSelect, onAddChild, onDelete }: ElementTreeProps) {
+export default function ElementTree({ elements, selectedElementId, onSelect, onAddChild, onDelete, onHover }: ElementTreeProps) {
   return (
-    <div className="h-full bg-gray-800 text-white overflow-auto text-xs">
-      <div className="px-3 py-2 border-b border-gray-700">
+    <div className="h-full bg-[#252525] text-gray-300 overflow-auto text-xs">
+      <div className="px-3 py-2 border-b border-[#2d2d2d]">
         <h2 className="text-sm font-semibold">Element Tree</h2>
       </div>
       <div className="py-1">
@@ -115,6 +120,7 @@ export default function ElementTree({ elements, selectedElementId, onSelect, onA
             onSelect={onSelect}
             onAddChild={onAddChild}
             onDelete={onDelete}
+            onHover={onHover}
             level={0}
           />
         ))}

@@ -30,13 +30,23 @@ export function useEditorState() {
 
   const updateElementStyles = useCallback((id: string, styles: Partial<ElementStyles>) => {
     setElements(prev =>
-      updateElementById(prev, id, element => ({
-        ...element,
-        styles: {
-          ...element.styles,
-          ...styles,
-        },
-      }))
+      updateElementById(prev, id, element => {
+        const newStyles = { ...element.styles };
+        
+        // Update or remove properties
+        Object.entries(styles).forEach(([key, value]) => {
+          if (value === undefined || value === '') {
+            delete newStyles[key as keyof ElementStyles];
+          } else {
+            newStyles[key as keyof ElementStyles] = value as any;
+          }
+        });
+        
+        return {
+          ...element,
+          styles: newStyles,
+        };
+      })
     );
   }, []);
 

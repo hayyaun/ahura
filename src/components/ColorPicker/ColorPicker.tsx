@@ -8,9 +8,11 @@ interface ColorPickerProps {
 
 // Convert hex to HSV
 function hexToHSV(hex: string): { h: number; s: number; v: number } {
-  const r = parseInt(hex.slice(1, 3), 16) / 255;
-  const g = parseInt(hex.slice(3, 5), 16) / 255;
-  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  // Default to black if empty
+  const color = hex || '#000000';
+  const r = parseInt(color.slice(1, 3), 16) / 255;
+  const g = parseInt(color.slice(3, 5), 16) / 255;
+  const b = parseInt(color.slice(5, 7), 16) / 255;
 
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
@@ -66,8 +68,13 @@ export default function ColorPicker({ value, onChange, label }: ColorPickerProps
   const [isDraggingHue, setIsDraggingHue] = useState(false);
 
   useEffect(() => {
-    setHsv(hexToHSV(value));
-    setHexInput(value);
+    if (value) {
+      setHsv(hexToHSV(value));
+      setHexInput(value);
+    } else {
+      setHsv(hexToHSV('#000000'));
+      setHexInput('');
+    }
   }, [value]);
 
   useEffect(() => {
@@ -93,6 +100,12 @@ export default function ColorPicker({ value, onChange, label }: ColorPickerProps
     setHsv({ h: newH, s: newS, v: newV });
     setHexInput(hex);
     onChange(hex);
+  };
+
+  const handleClear = () => {
+    onChange('');
+    setHexInput('');
+    setHsv(hexToHSV('#000000'));
   };
 
   const handleSaturationMouseDown = (e: React.MouseEvent) => {
@@ -148,7 +161,9 @@ export default function ColorPicker({ value, onChange, label }: ColorPickerProps
   const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setHexInput(newValue);
-    if (/^#[0-9A-F]{6}$/i.test(newValue)) {
+    if (newValue === '') {
+      onChange('');
+    } else if (/^#[0-9A-F]{6}$/i.test(newValue)) {
       const newHsv = hexToHSV(newValue);
       setHsv(newHsv);
       onChange(newValue);
@@ -165,9 +180,22 @@ export default function ColorPicker({ value, onChange, label }: ColorPickerProps
           ref={buttonRef}
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-6 h-6 rounded border border-gray-600 overflow-hidden hover:border-gray-500 transition-colors flex-shrink-0"
-          style={{ backgroundColor: value }}
-        />
+          className="w-6 h-6 rounded border border-[#3a3a3a] overflow-hidden hover:border-[#4a4a4a] transition-colors flex-shrink-0 relative"
+          style={{ backgroundColor: value || 'transparent' }}
+        >
+          {/* Checkerboard pattern for empty/transparent */}
+          {!value && (
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage:
+                  'linear-gradient(45deg, #808080 25%, transparent 25%), linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%), linear-gradient(-45deg, transparent 75%, #808080 75%)',
+                backgroundSize: '8px 8px',
+                backgroundPosition: '0 0, 0 4px, 4px -4px, -4px 0px',
+              }}
+            />
+          )}
+        </button>
         
         {/* Label */}
         <span className="text-xs text-gray-300 flex-1">{label}</span>
@@ -179,7 +207,7 @@ export default function ColorPicker({ value, onChange, label }: ColorPickerProps
       {isOpen && (
         <div
           ref={popoverRef}
-          className="absolute top-full mt-1 left-0 z-50 bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-2.5 w-52"
+          className="absolute top-full mt-1 left-0 z-50 bg-[#252525] border border-[#2d2d2d] rounded-lg shadow-xl p-2.5 w-52"
         >
           <div className="flex gap-2 mb-2">
             {/* Saturation/Value Square */}
@@ -225,10 +253,10 @@ export default function ColorPicker({ value, onChange, label }: ColorPickerProps
           {/* Hex Input */}
           <input
             type="text"
-            value={hexInput.toUpperCase()}
+            value={hexInput ? hexInput.toUpperCase() : ''}
             onChange={handleHexChange}
-            className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500 font-mono text-center"
-            placeholder="#000000"
+            className="w-full px-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a] font-mono text-center"
+            placeholder="Empty"
           />
         </div>
       )}

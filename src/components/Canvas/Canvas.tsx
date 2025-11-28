@@ -4,25 +4,35 @@ import { stylesToInlineCSS } from '../../utils/elementUtils';
 interface CanvasProps {
   elements: UIElement[];
   selectedElementId: string | null;
+  hoveredElementId: string | null;
   onSelectElement: (id: string) => void;
 }
 
 interface RenderedElementProps {
   element: UIElement;
   selectedElementId: string | null;
+  hoveredElementId: string | null;
   onSelectElement: (id: string) => void;
 }
 
-function RenderedElement({ element, selectedElementId, onSelectElement }: RenderedElementProps) {
+function RenderedElement({ element, selectedElementId, hoveredElementId, onSelectElement }: RenderedElementProps) {
   const isSelected = element.id === selectedElementId;
+  const isHovered = element.id === hoveredElementId && !isSelected;
   const Tag = element.tag as keyof JSX.IntrinsicElements;
   const style = stylesToInlineCSS(element.styles);
+  
+  // Add default text color for visibility if not set (but don't store it)
+  const displayStyle = { ...style };
+  if (!displayStyle.color && (element.tag === 'p' || element.tag === 'span' || element.tag === 'button' || element.tag.startsWith('h'))) {
+    displayStyle.color = '#000000';
+  }
 
   return (
     <Tag
-      style={style}
+      style={displayStyle}
       className={`relative transition-all ${
-        isSelected ? 'outline outline-2 outline-blue-500' : ''
+        isSelected ? 'outline outline-2 outline-blue-500' : 
+        isHovered ? 'outline outline-1 outline-dashed outline-blue-400' : ''
       } hover:outline hover:outline-1 hover:outline-blue-300 cursor-pointer`}
       onClick={(e: React.MouseEvent) => {
         e.stopPropagation();
@@ -65,6 +75,7 @@ function RenderedElement({ element, selectedElementId, onSelectElement }: Render
           key={child.id}
           element={child}
           selectedElementId={selectedElementId}
+          hoveredElementId={hoveredElementId}
           onSelectElement={onSelectElement}
         />
       ))}
@@ -72,19 +83,20 @@ function RenderedElement({ element, selectedElementId, onSelectElement }: Render
   );
 }
 
-export default function Canvas({ elements, selectedElementId, onSelectElement }: CanvasProps) {
+export default function Canvas({ elements, selectedElementId, hoveredElementId, onSelectElement }: CanvasProps) {
   return (
-    <div className="h-full bg-gray-100 overflow-auto">
-      <div className="px-4 py-2 border-b border-gray-300 bg-white">
+    <div className="h-full bg-gray-100 overflow-auto flex flex-col">
+      <div className="px-4 py-2 border-b border-gray-300 bg-white flex-shrink-0">
         <h2 className="text-sm font-semibold text-gray-800">Canvas</h2>
       </div>
-      <div className="p-8">
-        <div className="bg-white min-h-[calc(100vh-200px)] shadow-lg">
+      <div className="flex-1 p-8 overflow-auto">
+        <div className="bg-white shadow-lg h-full">
           {elements.map((element) => (
             <RenderedElement
               key={element.id}
               element={element}
               selectedElementId={selectedElementId}
+              hoveredElementId={hoveredElementId}
               onSelectElement={onSelectElement}
             />
           ))}

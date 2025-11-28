@@ -5,7 +5,8 @@ import {
   TbBorderAll, TbBorderTop, TbBorderRight, TbBorderBottom, TbBorderLeft,
   TbBorderCorners, TbBorderRadius,
   TbAlignLeft, TbAlignCenter, TbAlignRight, TbAlignJustified,
-  TbLayoutDistributeHorizontal, TbLayoutDistributeVertical
+  TbLayoutDistributeHorizontal, TbLayoutDistributeVertical,
+  TbBox
 } from 'react-icons/tb';
 import ColorPicker from '../ColorPicker/ColorPicker';
 
@@ -35,6 +36,8 @@ export default function AttributesEditor({
   const [localStyles, setLocalStyles] = useState<ElementStyles>(selectedElement?.styles || {});
   const [borderWidthExpanded, setBorderWidthExpanded] = useState(false);
   const [borderRadiusExpanded, setBorderRadiusExpanded] = useState(false);
+  const [paddingExpanded, setPaddingExpanded] = useState(false);
+  const [marginExpanded, setMarginExpanded] = useState(false);
 
   useEffect(() => {
     if (selectedElement) {
@@ -44,7 +47,7 @@ export default function AttributesEditor({
 
   if (!selectedElement) {
     return (
-      <div className="h-full bg-gray-800 text-white p-3">
+      <div className="h-full bg-[#252525] text-gray-300 p-3">
         <div className="text-center text-gray-400 text-xs mt-8">
           Select an element to edit its attributes
         </div>
@@ -52,10 +55,15 @@ export default function AttributesEditor({
     );
   }
 
-  const handleStyleChange = (key: keyof ElementStyles, value: string) => {
-    const newStyles = { ...localStyles, [key]: value };
+  const handleStyleChange = (key: keyof ElementStyles, value: string | undefined) => {
+    const newStyles = { ...localStyles };
+    if (value === undefined || value === '') {
+      delete newStyles[key];
+    } else {
+      newStyles[key] = value;
+    }
     setLocalStyles(newStyles);
-    onUpdateStyles(selectedElement.id, { [key]: value });
+    onUpdateStyles(selectedElement.id, { [key]: value || undefined });
   };
 
   const handleTagChange = (tag: ElementTag) => {
@@ -67,8 +75,8 @@ export default function AttributesEditor({
   };
 
   return (
-    <div className="h-full bg-gray-800 text-white overflow-auto text-xs">
-      <div className="px-3 py-2 border-b border-gray-700">
+    <div className="h-full bg-[#252525] text-gray-300 overflow-auto text-xs">
+      <div className="px-3 py-2 border-b border-[#2d2d2d]">
         <h2 className="text-sm font-semibold">Attributes</h2>
       </div>
 
@@ -79,7 +87,7 @@ export default function AttributesEditor({
           <select
             value={selectedElement.tag}
             onChange={(e) => handleTagChange(e.target.value as ElementTag)}
-            className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+            className="w-full px-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
           >
             {AVAILABLE_TAGS.map((tag) => (
               <option key={tag} value={tag}>
@@ -100,7 +108,7 @@ export default function AttributesEditor({
               type="text"
               value={selectedElement.content || ''}
               onChange={(e) => handleContentChange(e.target.value)}
-              className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+              className="w-full px-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
             />
           </div>
         )}
@@ -111,7 +119,7 @@ export default function AttributesEditor({
           <select
             value={localStyles.display || 'block'}
             onChange={(e) => handleStyleChange('display', e.target.value)}
-            className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+            className="w-full px-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
           >
             <option value="block">Block</option>
             <option value="inline-block">Inline Block</option>
@@ -128,7 +136,7 @@ export default function AttributesEditor({
           <select
             value={localStyles.position || 'static'}
             onChange={(e) => handleStyleChange('position', e.target.value)}
-            className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+            className="w-full px-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
           >
             <option value="static">Static</option>
             <option value="relative">Relative</option>
@@ -147,7 +155,7 @@ export default function AttributesEditor({
               value={localStyles.width || ''}
               onChange={(e) => handleStyleChange('width', e.target.value)}
               placeholder="auto"
-              className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+              className="w-full px-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
             />
           </div>
           <div>
@@ -157,46 +165,162 @@ export default function AttributesEditor({
               value={localStyles.height || ''}
               onChange={(e) => handleStyleChange('height', e.target.value)}
               placeholder="auto"
-              className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+              className="w-full px-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
             />
           </div>
         </div>
 
         {/* Padding */}
-        <div>
-          <label className="block text-xs font-medium mb-1">Padding</label>
-          <input
-            type="text"
-            value={localStyles.padding || ''}
-            onChange={(e) => handleStyleChange('padding', e.target.value)}
-            placeholder="e.g., 16px or 1rem"
-            className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
-          />
+        <div className="space-y-1">
+          <label className="block text-xs font-medium">Padding</label>
+          <div className="flex items-center gap-1">
+          {!paddingExpanded ? (
+            <div className="relative flex-1">
+              <TbBox size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <input
+                type="text"
+                value={localStyles.padding || ''}
+                onChange={(e) => handleStyleChange('padding', e.target.value)}
+                placeholder="0px"
+                className="w-full pl-7 pr-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
+              />
+            </div>
+          ) : (
+            <div className="flex-1 grid grid-cols-2 gap-1">
+              <div className="relative">
+                <TbBorderTop size={10} className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={localStyles.paddingTop || ''}
+                  onChange={(e) => handleStyleChange('paddingTop', e.target.value)}
+                  placeholder="0"
+                  className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
+                />
+              </div>
+              <div className="relative">
+                <TbBorderRight size={10} className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={localStyles.paddingRight || ''}
+                  onChange={(e) => handleStyleChange('paddingRight', e.target.value)}
+                  placeholder="0"
+                  className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
+                />
+              </div>
+              <div className="relative">
+                <TbBorderBottom size={10} className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={localStyles.paddingBottom || ''}
+                  onChange={(e) => handleStyleChange('paddingBottom', e.target.value)}
+                  placeholder="0"
+                  className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
+                />
+              </div>
+              <div className="relative">
+                <TbBorderLeft size={10} className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={localStyles.paddingLeft || ''}
+                  onChange={(e) => handleStyleChange('paddingLeft', e.target.value)}
+                  placeholder="0"
+                  className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
+                />
+              </div>
+            </div>
+          )}
+          
+          <button
+            onClick={() => setPaddingExpanded(!paddingExpanded)}
+            className="p-1 hover:bg-[#2d2d2d] rounded transition-colors flex-shrink-0"
+            title="Toggle individual sides"
+          >
+            <TbBox size={12} className="text-gray-400" />
+          </button>
+          </div>
         </div>
 
         {/* Margin */}
-        <div>
-          <label className="block text-xs font-medium mb-1">Margin</label>
-          <input
-            type="text"
-            value={localStyles.margin || ''}
-            onChange={(e) => handleStyleChange('margin', e.target.value)}
-            placeholder="e.g., 16px or 1rem"
-            className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
-          />
+        <div className="space-y-1">
+          <label className="block text-xs font-medium">Margin</label>
+          <div className="flex items-center gap-1">
+          {!marginExpanded ? (
+            <div className="relative flex-1">
+              <TbBox size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <input
+                type="text"
+                value={localStyles.margin || ''}
+                onChange={(e) => handleStyleChange('margin', e.target.value)}
+                placeholder="0px"
+                className="w-full pl-7 pr-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
+              />
+            </div>
+          ) : (
+            <div className="flex-1 grid grid-cols-2 gap-1">
+              <div className="relative">
+                <TbBorderTop size={10} className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={localStyles.marginTop || ''}
+                  onChange={(e) => handleStyleChange('marginTop', e.target.value)}
+                  placeholder="0"
+                  className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
+                />
+              </div>
+              <div className="relative">
+                <TbBorderRight size={10} className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={localStyles.marginRight || ''}
+                  onChange={(e) => handleStyleChange('marginRight', e.target.value)}
+                  placeholder="0"
+                  className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
+                />
+              </div>
+              <div className="relative">
+                <TbBorderBottom size={10} className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={localStyles.marginBottom || ''}
+                  onChange={(e) => handleStyleChange('marginBottom', e.target.value)}
+                  placeholder="0"
+                  className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
+                />
+              </div>
+              <div className="relative">
+                <TbBorderLeft size={10} className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={localStyles.marginLeft || ''}
+                  onChange={(e) => handleStyleChange('marginLeft', e.target.value)}
+                  placeholder="0"
+                  className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
+                />
+              </div>
+            </div>
+          )}
+          
+          <button
+            onClick={() => setMarginExpanded(!marginExpanded)}
+            className="p-1 hover:bg-[#2d2d2d] rounded transition-colors flex-shrink-0"
+            title="Toggle individual sides"
+          >
+            <TbBox size={12} className="text-gray-400" />
+          </button>
+          </div>
         </div>
 
         {/* Colors */}
         <div className="space-y-2">
           <ColorPicker
             label="Background"
-            value={localStyles.backgroundColor || '#ffffff'}
-            onChange={(color) => handleStyleChange('backgroundColor', color)}
+            value={localStyles.backgroundColor || ''}
+            onChange={(color) => handleStyleChange('backgroundColor', color || undefined)}
           />
           <ColorPicker
             label="Text"
-            value={localStyles.color || '#000000'}
-            onChange={(color) => handleStyleChange('color', color)}
+            value={localStyles.color || ''}
+            onChange={(color) => handleStyleChange('color', color || undefined)}
           />
         </div>
 
@@ -207,8 +331,8 @@ export default function AttributesEditor({
           {/* Border Color & Style */}
           <ColorPicker
             label="Border"
-            value={localStyles.borderColor || '#000000'}
-            onChange={(color) => handleStyleChange('borderColor', color)}
+            value={localStyles.borderColor || ''}
+            onChange={(color) => handleStyleChange('borderColor', color || undefined)}
           />
           
           <div>
@@ -216,7 +340,7 @@ export default function AttributesEditor({
             <select
               value={localStyles.borderStyle || 'solid'}
               onChange={(e) => handleStyleChange('borderStyle', e.target.value)}
-              className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+              className="w-full px-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
             >
               <option value="none">None</option>
               <option value="solid">Solid</option>
@@ -236,7 +360,7 @@ export default function AttributesEditor({
                   value={localStyles.borderWidth || ''}
                   onChange={(e) => handleStyleChange('borderWidth', e.target.value)}
                   placeholder="0px"
-                  className="w-full pl-7 pr-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+                  className="w-full pl-7 pr-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
                 />
               </div>
             ) : (
@@ -248,7 +372,7 @@ export default function AttributesEditor({
                     value={localStyles.borderTopWidth || ''}
                     onChange={(e) => handleStyleChange('borderTopWidth', e.target.value)}
                     placeholder="0"
-                    className="w-full pl-5 pr-1 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+                    className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
                   />
                 </div>
                 <div className="relative">
@@ -258,7 +382,7 @@ export default function AttributesEditor({
                     value={localStyles.borderRightWidth || ''}
                     onChange={(e) => handleStyleChange('borderRightWidth', e.target.value)}
                     placeholder="0"
-                    className="w-full pl-5 pr-1 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+                    className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
                   />
                 </div>
                 <div className="relative">
@@ -268,7 +392,7 @@ export default function AttributesEditor({
                     value={localStyles.borderBottomWidth || ''}
                     onChange={(e) => handleStyleChange('borderBottomWidth', e.target.value)}
                     placeholder="0"
-                    className="w-full pl-5 pr-1 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+                    className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
                   />
                 </div>
                 <div className="relative">
@@ -278,7 +402,7 @@ export default function AttributesEditor({
                     value={localStyles.borderLeftWidth || ''}
                     onChange={(e) => handleStyleChange('borderLeftWidth', e.target.value)}
                     placeholder="0"
-                    className="w-full pl-5 pr-1 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+                    className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
                   />
                 </div>
               </div>
@@ -286,7 +410,7 @@ export default function AttributesEditor({
             
             <button
               onClick={() => setBorderWidthExpanded(!borderWidthExpanded)}
-              className="p-1 hover:bg-gray-700 rounded transition-colors flex-shrink-0"
+              className="p-1 hover:bg-[#2d2d2d] rounded transition-colors flex-shrink-0"
               title="Toggle individual sides"
             >
               <TbBorderAll size={12} className="text-gray-400" />
@@ -304,7 +428,7 @@ export default function AttributesEditor({
                 value={localStyles.borderRadius || ''}
                 onChange={(e) => handleStyleChange('borderRadius', e.target.value)}
                 placeholder="0px"
-                className="w-full pl-7 pr-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+                className="w-full pl-7 pr-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
               />
             </div>
           ) : (
@@ -316,7 +440,7 @@ export default function AttributesEditor({
                   value={localStyles.borderTopLeftRadius || ''}
                   onChange={(e) => handleStyleChange('borderTopLeftRadius', e.target.value)}
                   placeholder="0"
-                  className="w-full pl-5 pr-1 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+                  className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
                 />
               </div>
               <div className="relative">
@@ -326,7 +450,7 @@ export default function AttributesEditor({
                   value={localStyles.borderTopRightRadius || ''}
                   onChange={(e) => handleStyleChange('borderTopRightRadius', e.target.value)}
                   placeholder="0"
-                  className="w-full pl-5 pr-1 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+                  className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
                 />
               </div>
               <div className="relative">
@@ -336,7 +460,7 @@ export default function AttributesEditor({
                   value={localStyles.borderBottomRightRadius || ''}
                   onChange={(e) => handleStyleChange('borderBottomRightRadius', e.target.value)}
                   placeholder="0"
-                  className="w-full pl-5 pr-1 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+                  className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
                 />
               </div>
               <div className="relative">
@@ -346,7 +470,7 @@ export default function AttributesEditor({
                   value={localStyles.borderBottomLeftRadius || ''}
                   onChange={(e) => handleStyleChange('borderBottomLeftRadius', e.target.value)}
                   placeholder="0"
-                  className="w-full pl-5 pr-1 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+                  className="w-full pl-5 pr-1 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
                 />
               </div>
             </div>
@@ -354,7 +478,7 @@ export default function AttributesEditor({
           
           <button
             onClick={() => setBorderRadiusExpanded(!borderRadiusExpanded)}
-            className="p-1 hover:bg-gray-700 rounded transition-colors flex-shrink-0"
+            className="p-1 hover:bg-[#2d2d2d] rounded transition-colors flex-shrink-0"
             title="Toggle individual corners"
           >
             <TbBorderCorners size={12} className="text-gray-400" />
@@ -370,7 +494,7 @@ export default function AttributesEditor({
                 <button
                   onClick={() => handleStyleChange('flexDirection', 'row')}
                   className={`flex-1 p-1.5 rounded transition-colors ${
-                    localStyles.flexDirection === 'row' ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
+                    localStyles.flexDirection === 'row' ? 'bg-blue-600' : 'bg-[#2d2d2d] hover:bg-blue-600'
                   }`}
                   title="Row"
                 >
@@ -379,7 +503,7 @@ export default function AttributesEditor({
                 <button
                   onClick={() => handleStyleChange('flexDirection', 'column')}
                   className={`flex-1 p-1.5 rounded transition-colors ${
-                    localStyles.flexDirection === 'column' ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
+                    localStyles.flexDirection === 'column' ? 'bg-blue-600' : 'bg-[#2d2d2d] hover:bg-blue-600'
                   }`}
                   title="Column"
                 >
@@ -393,7 +517,7 @@ export default function AttributesEditor({
               <select
                 value={localStyles.justifyContent || 'flex-start'}
                 onChange={(e) => handleStyleChange('justifyContent', e.target.value)}
-                className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+                className="w-full px-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
               >
                 <option value="flex-start">Start</option>
                 <option value="flex-end">End</option>
@@ -409,7 +533,7 @@ export default function AttributesEditor({
               <select
                 value={localStyles.alignItems || 'stretch'}
                 onChange={(e) => handleStyleChange('alignItems', e.target.value)}
-                className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+                className="w-full px-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
               >
                 <option value="flex-start">Start</option>
                 <option value="flex-end">End</option>
@@ -426,7 +550,7 @@ export default function AttributesEditor({
                 value={localStyles.gap || ''}
                 onChange={(e) => handleStyleChange('gap', e.target.value)}
                 placeholder="e.g., 16px"
-                className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+                className="w-full px-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
               />
             </div>
           </>
@@ -440,7 +564,7 @@ export default function AttributesEditor({
             value={localStyles.fontSize || ''}
             onChange={(e) => handleStyleChange('fontSize', e.target.value)}
             placeholder="e.g., 16px"
-            className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+            className="w-full px-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
           />
         </div>
 
@@ -449,7 +573,7 @@ export default function AttributesEditor({
           <select
             value={localStyles.fontWeight || 'normal'}
             onChange={(e) => handleStyleChange('fontWeight', e.target.value)}
-            className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+            className="w-full px-2 py-1 text-xs bg-[#2d2d2d] border border-[#3a3a3a] rounded focus:outline-none focus:border-[#4a4a4a]"
           >
             <option value="normal">Normal</option>
             <option value="bold">Bold</option>
@@ -472,7 +596,7 @@ export default function AttributesEditor({
             <button
               onClick={() => handleStyleChange('textAlign', 'left')}
               className={`flex-1 p-1.5 rounded transition-colors ${
-                localStyles.textAlign === 'left' ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
+                localStyles.textAlign === 'left' ? 'bg-blue-600' : 'bg-[#2d2d2d] hover:bg-blue-600'
               }`}
               title="Align Left"
             >
@@ -481,7 +605,7 @@ export default function AttributesEditor({
             <button
               onClick={() => handleStyleChange('textAlign', 'center')}
               className={`flex-1 p-1.5 rounded transition-colors ${
-                localStyles.textAlign === 'center' ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
+                localStyles.textAlign === 'center' ? 'bg-blue-600' : 'bg-[#2d2d2d] hover:bg-blue-600'
               }`}
               title="Align Center"
             >
@@ -490,7 +614,7 @@ export default function AttributesEditor({
             <button
               onClick={() => handleStyleChange('textAlign', 'right')}
               className={`flex-1 p-1.5 rounded transition-colors ${
-                localStyles.textAlign === 'right' ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
+                localStyles.textAlign === 'right' ? 'bg-blue-600' : 'bg-[#2d2d2d] hover:bg-blue-600'
               }`}
               title="Align Right"
             >
@@ -499,7 +623,7 @@ export default function AttributesEditor({
             <button
               onClick={() => handleStyleChange('textAlign', 'justify')}
               className={`flex-1 p-1.5 rounded transition-colors ${
-                localStyles.textAlign === 'justify' ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
+                localStyles.textAlign === 'justify' ? 'bg-blue-600' : 'bg-[#2d2d2d] hover:bg-blue-600'
               }`}
               title="Justify"
             >

@@ -30,8 +30,8 @@ ${exportToReactCode(elements, 2)}
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-800 text-white rounded-lg shadow-xl w-[800px] max-h-[80vh] flex flex-col">
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-700">
+      <div className="bg-[#252525] text-gray-300 rounded-lg shadow-xl w-[800px] max-h-[80vh] flex flex-col">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#2d2d2d]">
           <h2 className="text-sm font-semibold">Export React Code</h2>
           <button
             onClick={onClose}
@@ -47,7 +47,7 @@ ${exportToReactCode(elements, 2)}
           </pre>
         </div>
 
-        <div className="px-4 py-2.5 border-t border-gray-700 flex justify-end gap-2">
+        <div className="px-4 py-2.5 border-t border-[#2d2d2d] flex justify-end gap-2">
           <button
             onClick={handleCopy}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-700 rounded transition-colors"

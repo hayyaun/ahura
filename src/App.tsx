@@ -18,14 +18,15 @@ function App() {
   } = useEditorState();
 
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-900">
+    <div className="flex flex-col h-screen bg-[#1e1e1e]">
       {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700 px-4 py-2 flex items-center justify-between">
+      <header className="bg-[#1e1e1e] border-b border-[#2d2d2d] px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="text-lg font-bold text-blue-500">Ahura</div>
-          <div className="text-gray-400 text-xs">Visual UI Builder</div>
+          <div className="text-lg font-bold text-gray-300">Ahura</div>
+          <div className="text-gray-500 text-xs">Visual UI Builder</div>
         </div>
         <button
           onClick={() => setIsExportModalOpen(true)}
@@ -39,13 +40,14 @@ function App() {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel - Element Tree */}
-        <div className="w-56 border-r border-gray-700 flex-shrink-0">
+        <div className="w-56 border-r border-[#2d2d2d] flex-shrink-0">
           <ElementTree
             elements={elements}
             selectedElementId={selectedElementId}
             onSelect={selectElement}
             onAddChild={addElement}
             onDelete={deleteElement}
+            onHover={setHoveredElementId}
           />
         </div>
 
@@ -54,12 +56,13 @@ function App() {
           <Canvas
             elements={elements}
             selectedElementId={selectedElementId}
+            hoveredElementId={hoveredElementId}
             onSelectElement={selectElement}
           />
         </div>
 
         {/* Right Panel - Attributes Editor */}
-        <div className="w-64 border-l border-gray-700 flex-shrink-0">
+        <div className="w-64 border-l border-[#2d2d2d] flex-shrink-0">
           <AttributesEditor
             elements={elements}
             selectedElementId={selectedElementId}
