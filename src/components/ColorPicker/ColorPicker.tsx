@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 interface ColorPickerProps {
   value: string;
   onChange: (color: string) => void;
-  label?: string;
+  label: string;
 }
 
 // Convert hex to HSV
@@ -159,15 +159,22 @@ export default function ColorPicker({ value, onChange, label }: ColorPickerProps
 
   return (
     <div className="relative">
-      {label && <label className="block text-xs font-medium mb-1">{label}</label>}
-      
-      <button
-        ref={buttonRef}
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full h-7 rounded border border-gray-600 overflow-hidden hover:border-gray-500 transition-colors"
-        style={{ backgroundColor: value }}
-      />
+      <div className="flex items-center gap-2">
+        {/* Color Swatch */}
+        <button
+          ref={buttonRef}
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-6 h-6 rounded border border-gray-600 overflow-hidden hover:border-gray-500 transition-colors flex-shrink-0"
+          style={{ backgroundColor: value }}
+        />
+        
+        {/* Label */}
+        <span className="text-xs text-gray-300 flex-1">{label}</span>
+        
+        {/* Opacity */}
+        <span className="text-xs text-gray-400">100%</span>
+      </div>
 
       {isOpen && (
         <div

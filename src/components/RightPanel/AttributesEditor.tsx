@@ -187,14 +187,14 @@ export default function AttributesEditor({
         </div>
 
         {/* Colors */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-2">
           <ColorPicker
             label="Background"
             value={localStyles.backgroundColor || '#ffffff'}
             onChange={(color) => handleStyleChange('backgroundColor', color)}
           />
           <ColorPicker
-            label="Text Color"
+            label="Text"
             value={localStyles.color || '#000000'}
             onChange={(color) => handleStyleChange('color', color)}
           />
@@ -204,29 +204,26 @@ export default function AttributesEditor({
         <div className="space-y-2">
           <label className="block text-xs font-medium">Border</label>
           
-          {/* Border Style & Color */}
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="block text-[10px] text-gray-400 mb-0.5">Style</label>
-              <select
-                value={localStyles.borderStyle || 'solid'}
-                onChange={(e) => handleStyleChange('borderStyle', e.target.value)}
-                className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
-              >
-                <option value="none">None</option>
-                <option value="solid">Solid</option>
-                <option value="dashed">Dashed</option>
-                <option value="dotted">Dotted</option>
-                <option value="double">Double</option>
-              </select>
-            </div>
-            <div>
-              <ColorPicker
-                label="Color"
-                value={localStyles.borderColor || '#000000'}
-                onChange={(color) => handleStyleChange('borderColor', color)}
-              />
-            </div>
+          {/* Border Color & Style */}
+          <ColorPicker
+            label="Border"
+            value={localStyles.borderColor || '#000000'}
+            onChange={(color) => handleStyleChange('borderColor', color)}
+          />
+          
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Style</label>
+            <select
+              value={localStyles.borderStyle || 'solid'}
+              onChange={(e) => handleStyleChange('borderStyle', e.target.value)}
+              className="w-full px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500"
+            >
+              <option value="none">None</option>
+              <option value="solid">Solid</option>
+              <option value="dashed">Dashed</option>
+              <option value="dotted">Dotted</option>
+              <option value="double">Double</option>
+            </select>
           </div>
 
           {/* Border Width */}
