@@ -5,9 +5,9 @@ import {
   TbBorderAll, TbBorderTop, TbBorderRight, TbBorderBottom, TbBorderLeft,
   TbBorderCorners, TbBorderRadius,
   TbAlignLeft, TbAlignCenter, TbAlignRight, TbAlignJustified,
-  TbLayoutDistributeHorizontal, TbLayoutDistributeVertical,
-  TbChevronDown, TbChevronRight
+  TbLayoutDistributeHorizontal, TbLayoutDistributeVertical
 } from 'react-icons/tb';
+import ColorPicker from '../ColorPicker/ColorPicker';
 
 interface AttributesEditorProps {
   elements: UIElement[];
@@ -188,24 +188,16 @@ export default function AttributesEditor({
 
         {/* Colors */}
         <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="block text-xs font-medium mb-1">Background</label>
-            <input
-              type="color"
-              value={localStyles.backgroundColor || '#ffffff'}
-              onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
-              className="w-full h-7 bg-gray-700 border border-gray-600 rounded cursor-pointer"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium mb-1">Text Color</label>
-            <input
-              type="color"
-              value={localStyles.color || '#000000'}
-              onChange={(e) => handleStyleChange('color', e.target.value)}
-              className="w-full h-7 bg-gray-700 border border-gray-600 rounded cursor-pointer"
-            />
-          </div>
+          <ColorPicker
+            label="Background"
+            value={localStyles.backgroundColor || '#ffffff'}
+            onChange={(color) => handleStyleChange('backgroundColor', color)}
+          />
+          <ColorPicker
+            label="Text Color"
+            value={localStyles.color || '#000000'}
+            onChange={(color) => handleStyleChange('color', color)}
+          />
         </div>
 
         {/* Border */}
@@ -229,12 +221,10 @@ export default function AttributesEditor({
               </select>
             </div>
             <div>
-              <label className="block text-[10px] text-gray-400 mb-0.5">Color</label>
-              <input
-                type="color"
+              <ColorPicker
+                label="Color"
                 value={localStyles.borderColor || '#000000'}
-                onChange={(e) => handleStyleChange('borderColor', e.target.value)}
-                className="w-full h-7 bg-gray-700 border border-gray-600 rounded cursor-pointer"
+                onChange={(color) => handleStyleChange('borderColor', color)}
               />
             </div>
           </div>
